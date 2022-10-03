@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     CountDownTimer countDownTimer;
     ImageView imageView;
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.image_4,
             R.drawable.image_5
     };
-    int count = 0;
+    int count = 1;
     boolean isRunning = false;
     Handler handler;
     @Override
@@ -33,23 +33,9 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.image_view_banner);
         btnStart = findViewById(R.id.button_start);
         btnPause = findViewById(R.id.button_pause);
-
         handler = new Handler();
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                handler.postDelayed(runnableStart, 1000);
-            }
-        });
-
-        btnPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                handler.removeCallbacks(runnableStart);
-            }
-        });
-        // Requirement : Nếu đang chạy thì dừng không thì thông báo chưa start
+        btnStart.setOnClickListener(this::onClick);
+        btnPause.setOnClickListener(this::onClick);
     }
 
     private Runnable runnableStart = new Runnable() {
@@ -82,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
             countDownTimer.start();
         } else {
             Toast.makeText(MainActivity.this, "Banner đang chạy", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_pause:
+                handler.removeCallbacks(runnableStart);
+                break;
+            case R.id.button_start:
+                handler.postDelayed(runnableStart, 1000);
+                break;
         }
     }
 }
