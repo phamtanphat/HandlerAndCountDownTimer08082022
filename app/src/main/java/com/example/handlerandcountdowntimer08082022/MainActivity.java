@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     };
     int count = 0;
     boolean isRunning = false;
+    Handler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,21 +34,32 @@ public class MainActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.button_start);
         btnPause = findViewById(R.id.button_pause);
 
+        handler = new Handler();
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "Đã chờ 1s", Toast.LENGTH_SHORT).show();
-                    }
-                }, 1000);
+                handler.postDelayed(runnableStart, 1000);
             }
         });
 
+        btnPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handler.removeCallbacks(runnableStart);
+            }
+        });
         // Requirement : Nếu đang chạy thì dừng không thì thông báo chưa start
     }
+
+    private Runnable runnableStart = new Runnable() {
+        @Override
+        public void run() {
+            count = count == arrImages.length ? 0 : count;
+            imageView.setImageResource(arrImages[count++]);
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     private void startBanner() {
         if (!isRunning) {
@@ -56,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onTick(long l) {
                     if (l >= 1000) {
-                        count = count == arrImages.length - 1 ? 0 : count;
+                        count = count == arrImages.length ? 0 : count;
                         imageView.setImageResource(arrImages[count++]);
                     }
                 }
